@@ -18,6 +18,20 @@ git clean -fdx
 rsync -azhvv --exclude-from=<(git -C local-site/ ls-files --directory) --exclude-from=<(git -C local-site/ ls-tree -rt HEAD | awk '{if ($2 == "tree") print $4;}') remote-site/ local-site/
 ```
 
+Problem: 
+- git ls-files is handy, but does only work for files (not directories)
+```
+.gitignore
+wp-content/themes/twentytwentyone-child/functions.php
+```
+- git ls-tree shows directories, but all directories instead of last level (that's what we would need)
+```
+local-site
+local-site/wp-content
+local-site/wp-content/themes
+local-site/wp-content/themes/twentytwentyone-child
+```
+
 (Based on bash processing https://stackoverflow.com/questions/13713101/rsync-exclude-according-to-gitignore-hgignore-svnignore-like-filter-c#comment104587797_50059607 and  https://stackoverflow.com/a/35927535/809939)
 
 https://stackoverflow.com/a/54162211/809939 => git ls-tree for directories tracked ... should be enough?
