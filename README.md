@@ -15,15 +15,16 @@ cd demo-rsync-gitignore-problem
 git clean -fdx
 
 
-rsync -azhvv --exclude-from=<(git -C local-site/ ls-files --directory) remote-site/ local-site/
-
+rsync -azhvv --exclude-from=<(git -C local-site/ ls-files --directory) --exclude-from=<(git -C local-site/ ls-tree -rt HEAD | awk '{if ($2 == "tree") print $4;}') remote-site/ local-site/
 ```
 
 (Based on bash processing https://stackoverflow.com/questions/13713101/rsync-exclude-according-to-gitignore-hgignore-svnignore-like-filter-c#comment104587797_50059607 and  https://stackoverflow.com/a/35927535/809939)
 
---ignored
+https://stackoverflow.com/a/54162211/809939 => git ls-tree for directories tracked ... should be enough?
 
 https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--i
+
+
 
 **Reset experiment**
 
