@@ -1,20 +1,37 @@
 
 **Goal**
 
-- Rsync everything from remote-site/ to local-site/-folder, 
-    - except for git tracked folder and files (wp-content/themes/twenttwentyone-child). 
-    - Should be based on local-site/.gitignore (reverse / opposite).
+- Rsync everything from `remote-site/` to `local-site/`-folder, 
+    - EXCEPT for git tracked folder and files (e.g. `wp-content/themes/twentytwentyone-child`). 
+    - Should be based on `local-site/.gitignore` (basically we need to opposite of it)
 
+Challenge is that rsync understands gitignore only partly (?) and can't work with the following `.gitignore` pattern with slashes at the beginning:
+```
+# Ignore all ... 
+# (via relative from docroot, not via glob)
+/*
 
-**Current try**
+# ... but track specific files / folders: 
+# (see https://stackoverflow.com/a/29012085/809939)
+
+!.gitignore
+
+# track child theme
+!/wp-content
+/wp-content/*
+!/wp-content/themes
+/wp-content/themes/*
+!/wp-content/themes/twentytwentyone-child
+```
+
+Therefore `--include-from='.gitignore' --exclude='*'` - does not work, because rsync excepts patterns for it, not paths with `/...`.
+
+**Current try: git ls-files and ls-tree**
 
 Does not work as well:
 
 ```bash
 cd demo-rsync-gitignore-problem
-git clean -fdx
-
-
 rsync -azhvv --exclude-from=<(git -C local-site/ ls-files --directory) --exclude-from=<(git -C local-site/ ls-tree -rt HEAD | awk '{if ($2 == "tree") print $4;}') remote-site/ local-site/
 ```
 
@@ -46,7 +63,7 @@ https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--i
 
 **Already tried:**
 
-Problem is, rsync understands gitignore only partly?
+
 
 - `rsync -azhvv --filter='+ /.gitignore' --filter='- *' remote-site/ local-site/`
 - `--include-from='.gitignore' --exclude='*'` - this does not work, because rsync uses a pattern for it, it doesn't work with `/path` relative from root?
