@@ -15,14 +15,15 @@ cd demo-rsync-gitignore-problem
 git clean -fdx
 
 
-rsync -azhvv  --exclude='*' --exclude-from=<(git -C local-site/ ls-files --exclude-standard -oi --directory) remote-site/ local-site/
+rsync -azhvv --exclude-from=<(git -C local-site/ ls-files --directory) remote-site/ local-site/
 
-
-rsync -azhvv  --exclude='*' --include-from="$(git -C local-site/ ls-files --exclude-standard -oi --directory >.git/ignores.tmp && echo .git/ignores.tmp')" remote-site/ local-site/
 ```
 
-(Based on https://stackoverflow.com/a/35927535/809939)
+(Based on bash processing https://stackoverflow.com/questions/13713101/rsync-exclude-according-to-gitignore-hgignore-svnignore-like-filter-c#comment104587797_50059607 and  https://stackoverflow.com/a/35927535/809939)
 
+--ignored
+
+https://git-scm.com/docs/git-ls-files#Documentation/git-ls-files.txt--i
 
 **Reset experiment**
 
